@@ -44,7 +44,7 @@ class PlanarController:
         self.origin_z = 0.0                # z0
         self.z_ref = 0.0                   # kayan derinlik referansı
         self.z_target = 0.0                # hedef derinlik
-        self.diving = True                 # True iken yol ilerlemez (önce dalış)
+        # Aşama bilgisi (dalış / hizalanma / bekleme) artık burada değil: state_machine.Supervisor tutar.
         # Son referans: (x, y, yön ψ, vx, vy). Başlangıç yönü yolun s=0'daki teğeti.
         self.ref = (0.0, 0.0, self.gen.path.at(0.0)[2], 0.0, 0.0)
         self.yaw_ref = 0.0                 # hız sınırlı yaw referansı ψ_ref
@@ -74,27 +74,34 @@ class PlanarController:
     def _heading_target(self):
         return self.ref[2] if self.yaw_mode == 'tangent' else 0.0
 
-    # update: bir kontrol adımı (dt [s]). Dönen: surge, sway, heave [N], torque [N·m], info (kayıt için).
-    def update(self, x, y, yaw, z, dt):
+    # phase_inputs: Supervisor'ın geçiş koşulları için gereken büyüklükler (Q2 tablosu).
+    #   dz      = |z* - z|                       (DIVE → ALIGN:  dz < dive_tol)
+    #   yaw_err = |wrap(ψ_hedef - ψ_s)|          (ALIGN → TRACK/DWELL: yaw_err < yaw_tol)
+    #   v, dwell_left, done: referans üretecinin durumu (TRACK ↔ DWELL ↔ DONE)
+    def phase_inputs(self, x, y, yaw, z):
+        _, _, yaws = self.to_start_frame(x, y, yaw)
+        return dict(dz=abs(self.z_target - z),
+                    yaw_err=abs(wrap_angle(self._heading_target() - yaws)),
+                    v=self.gen.v, dwell_left=self.gen.dwell_left, done=self.gen.done)
+
+    # update: bir kontrol adımı (dt [s]). advance: yol referansı bu adımda ilerlesin mi (durum TRACK/DWELL ise
+    # Supervisor True verir). Dönen: surge, sway, heave [N], torque [N·m], info (kayıt için).
+    def update(self, x, y, yaw, z, dt, advance):
         # dt sıfır/negatif gelirse w_ref = dψ/dt bölmesi sonsuz olurdu → alt sınır.
         dt = max(dt, 1e-6)
         xs, ys, yaws = self.to_start_frame(x, y, yaw)
 
         # --- DERİNLİK ---
         # Referans hedefe sabit hızla kayar: z_ref ← z_ref + clamp(z* - z_ref, ±dive_rate·dt) (basamak yok).
-        # Dalış bitti: |z* - z| < 5 cm. Bitene kadar yol ilerlemez. Heave = PID(z_ref - z) (nötr yüzdürme: ağırlık telafisi yok).
+        # Heave = PID(z_ref - z) (nötr yüzdürme: ağırlık telafisi yok). Dalışın bitişi (|z* - z| < dive_tol) Supervisor'da.
         step = self.p['dive_rate'] * dt
         self.z_ref += max(-step, min(step, self.z_target - self.z_ref))
-        if self.diving and abs(self.z_target - z) < 0.05:
-            self.diving = False
         heave = self.pid_z.update(self.z_ref - z, dt)
 
         # --- REFERANS NOKTASI ---
-        # Dururken (köşe/başlangıç) |wrap(ψ_hedef - ψ)| < yaw_tol olmadan referans ilerlemez; hareket halindeyse (v>0) ilerler.
-        if not self.diving:
-            aligned = abs(wrap_angle(self._heading_target() - yaws)) < self.p['yaw_tol']
-            if aligned or self.gen.v > 0.0:
-                self.ref = self.gen.step(dt)
+        # Eski kod: "if not diving and (aligned or v > 0): ilerlet". Bu karar artık durumdan gelir (advance).
+        if advance:
+            self.ref = self.gen.step(dt)
         rx, ry, _, rvx, rvy = self.ref
 
         # --- YAW ---
@@ -130,3 +137,8 @@ class PlanarController:
         info = dict(xs=xs, ys=ys, yaw=yaws, rx=rx, ry=ry, yaw_ref=self.yaw_ref,
                     z=z - self.origin_z, z_ref=self.z_ref - self.origin_z)
         return surge, sway, heave, torque, info
+
+    # hold_depth: FAILSAFE 'hold' eylemi. Yatay kuvvet ve moment 0; heave = PID(z_tut - z) ile olduğun derinlikte kal.
+    # z_tut FAILSAFE'e girişte bir kez alınır (referans kaymaz). Dönen: heave [N].
+    def hold_depth(self, z_hold, z, dt):
+        return self.pid_z.update(z_hold - z, max(dt, 1e-6))

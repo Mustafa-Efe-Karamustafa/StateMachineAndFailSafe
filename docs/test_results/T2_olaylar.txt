@@ -1,0 +1,5 @@
+ 14.04 T2: pkill -f parameter_bridge
+ 26.08 T6: köprü yeniden başlatıldı (arıza giderildi)
+ 27.61 T6: erken onay (beklenen: RED)
+ 32.79 T6: onay (beklenen: KABUL → INIT)
+ 63.97 son

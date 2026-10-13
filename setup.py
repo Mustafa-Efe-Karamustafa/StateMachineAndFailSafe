@@ -11,7 +11,7 @@ package_name = 'sualti_sim_son'
 
 setup(
     name=package_name,
-    version='0.1.1',
+    version='0.2.0',
     packages=find_packages(exclude=['test']),
     # data_files: (kurulum klasörü, [kaynak dosyalar]). resource/<paket> ament'in paketi bulması için gerekli işaret dosyası.
     data_files=[
@@ -28,5 +28,6 @@ setup(
     description='Gazebo fizikli su altı aracı: kare ve daire sürüş, PID',
     license='MIT',
     # console_scripts: 'motion_node' komutu = sualti_sim_son/motion_node.py içindeki main()
-    entry_points={'console_scripts': ['motion_node = sualti_sim_son.motion_node:main']},
+    entry_points={'console_scripts': ['motion_node = sualti_sim_son.motion_node:main',
+                                    'plot_run = sualti_sim_son.plot_run:main']},
 )

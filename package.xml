@@ -5,7 +5,7 @@
      ============================================================================= -->
 <package format="3">
   <name>sualti_sim_son</name>
-  <version>0.1.1</version>
+  <version>0.2.0</version>
   <description>Gazebo fizikli su altı aracı: kare ve daire sürüş, PID</description>
   <maintainer email="takim@example.com">Sualti Takimi</maintainer>
   <license>MIT</license>
@@ -21,6 +21,7 @@
   <exec_depend>launch_ros</exec_depend>
   <exec_depend>ament_index_python</exec_depend>
   <exec_depend>python3-matplotlib</exec_depend>
+  <test_depend>python3-pytest</test_depend>
 
   <export>
     <build_type>ament_python</build_type>

@@ -1,0 +1,5 @@
+# T5b: itici sınırı 1 N → yatay kapasite 4·1·cos45 = 2.8 N < 0.4 m/s'deki sürtünme 5.2 N (en çok ≈ 0.27 m/s)
+#      → referans kaçar, itici sürekli sınırda → FAILSAFE (saturation / track_error) beklenir
+motion_node:
+  ros__parameters:
+    max_thrust: 1.0

@@ -1,0 +1,6 @@
+# T5c: itici sınırı 3 N + tepe hız 0.8 m/s. 0.8 m/s'de sürtünme 5·0.8 + 20·0.8² = 16.8 N > yatay kapasite 8.5 N
+#      (en çok ≈ 0.54 m/s) → referans kaçar, iticiler sürekli sınırda → FAILSAFE (saturation) → 'hold' beklenir
+motion_node:
+  ros__parameters:
+    max_thrust: 3.0
+    cruise_speed: 0.8

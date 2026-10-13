@@ -57,15 +57,17 @@ def _setup(context):
         Node(package='ros_gz_bridge', executable='parameter_bridge',
              arguments=bridge_args, output='screen'),
         # use_sim_time: düğüm Gazebo saatini (/clock) kullanır → dt simülasyon süresiyle hesaplanır.
+        # params:=<yaml> verilirse gains.yaml'dan SONRA yüklenir ve üstüne yazar (testler: T3 dive_depth, T5 max_thrust).
         Node(package='sualti_sim_son', executable='motion_node', output='screen',
-             parameters=[os.path.join(pkg, 'config', 'gains.yaml'),
-                         {'use_sim_time': True,
-                          'mission': arg('mission'),
-                          'thrust_sign': float(arg('thrust_sign'))}]),
+             parameters=[os.path.join(pkg, 'config', 'gains.yaml')]
+                        + ([arg('params')] if arg('params') else [])
+                        + [{'use_sim_time': True,
+                           'mission': arg('mission'),
+                           'thrust_sign': float(arg('thrust_sign'))}]),
     ]
 
 
-# generate_launch_description: komut satırı argümanlarını tanımlar (mission, gz, headless, thrust_sign).
+# generate_launch_description: komut satırı argümanlarını tanımlar (mission, gz, headless, thrust_sign, params).
 def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument('mission', default_value='line',
@@ -75,5 +77,7 @@ def generate_launch_description():
         DeclareLaunchArgument('headless', default_value='false'),
         DeclareLaunchArgument('thrust_sign', default_value='1.0',
                               description='Araç geri giderse -1.0 yapın'),
+        DeclareLaunchArgument('params', default_value='',
+                              description='Ek parametre dosyası (yaml), gains.yaml üstüne yazar'),
         OpaqueFunction(function=_setup),
     ])

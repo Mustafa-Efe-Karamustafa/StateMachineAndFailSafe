@@ -1,0 +1,21 @@
+[INFO] Kayıt: /home/mustafa/auv_logs/auv_square_20261013_214550.csv
+[INFO] Görev başladı
+[INFO] Durum: INIT -> DIVE (start_delay doldu) t=3.00 s
+[INFO] Durum: DIVE -> ALIGN (|z*-z| < 0.05) t=5.90 s
+[INFO] Durum: ALIGN -> TRACK (|e_ψ| < yaw_tol) t=5.90 s
+[ERROR] Watchdog: kontrol döngüsü 0.52 s, son odometri 0.49 s önce çalıştı (duvar saati) → /clock durdu, köprü/simülasyon yanıt vermiyor
+[ERROR] FAILSAFE: sebep=odom_stale, t=11.50 s, önceki durum=TRACK, eylem=zero
+[WARN] Operatör FAILSAFE onayı alındı
+[ERROR] FAILSAFE onayı reddedildi: arızasız süre 1.9 s < 2.0 s
+[WARN] Operatör FAILSAFE onayı alındı
+[INFO] Durum: FAILSAFE -> INIT (operatör onayı, 7.1 s arızasız) t=31.20 s
+[INFO] Görev başladı
+[INFO] Durum: INIT -> DIVE (start_delay doldu) t=34.20 s
+[INFO] Durum: DIVE -> ALIGN (|z*-z| < 0.05) t=37.10 s
+[INFO] Durum: ALIGN -> TRACK (|e_ψ| < yaw_tol) t=37.10 s
+[INFO] Durum: TRACK -> ALIGN (durağa varıldı) t=48.95 s
+[INFO] Durum: ALIGN -> DWELL (|e_ψ| < yaw_tol) t=51.90 s
+[INFO] Durum: DWELL -> TRACK (bekleme bitti) t=53.90 s
+[INFO] Durum: TRACK -> ALIGN (durağa varıldı) t=65.75 s
+[ERROR] Watchdog: kontrol döngüsü 0.52 s, son odometri 0.52 s önce çalıştı (duvar saati) → /clock durdu, köprü/simülasyon yanıt vermiyor
+[ERROR] FAILSAFE: sebep=odom_stale, t=68.55 s, önceki durum=ALIGN, eylem=zero

@@ -1,0 +1,4 @@
+# T3: hedef derinlik zeminin altında (z* = -1.5 - 2.8 = -4.3 m < zemin -3.0) → DIVE→FAILSAFE (depth_low) beklenir
+motion_node:
+  ros__parameters:
+    dive_depth: 2.8

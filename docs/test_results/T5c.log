@@ -1,0 +1,6 @@
+[INFO] Kayıt: /home/mustafa/auv_logs/auv_square_20261013_215214.csv
+[INFO] Görev başladı
+[INFO] Durum: INIT -> DIVE (start_delay doldu) t=3.00 s
+[INFO] Durum: DIVE -> ALIGN (|z*-z| < 0.05) t=5.90 s
+[INFO] Durum: ALIGN -> TRACK (|e_ψ| < yaw_tol) t=5.90 s
+[ERROR] FAILSAFE: sebep=saturation, t=11.00 s, önceki durum=TRACK, eylem=hold

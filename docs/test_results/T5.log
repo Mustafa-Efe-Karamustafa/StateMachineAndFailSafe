@@ -1,0 +1,8 @@
+[INFO] Kayıt: /home/mustafa/auv_logs/auv_square_20261013_214832.csv
+[INFO] Görev başladı
+[INFO] Durum: INIT -> DIVE (start_delay doldu) t=3.00 s
+[INFO] Durum: DIVE -> ALIGN (|z*-z| < 0.05) t=5.90 s
+[INFO] Durum: ALIGN -> TRACK (|e_ψ| < yaw_tol) t=5.90 s
+[INFO] Durum: TRACK -> ALIGN (durağa varıldı) t=17.75 s
+[INFO] Durum: ALIGN -> DWELL (|e_ψ| < yaw_tol) t=20.70 s
+[INFO] Durum: DWELL -> TRACK (bekleme bitti) t=22.70 s

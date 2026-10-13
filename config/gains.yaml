@@ -21,6 +21,7 @@ motion_node:
     yaw_tol: 0.087        # durakta hizalanma toleransı [rad] (≈5°); sağlanmadan yol ilerlemez
     dive_depth: 0.5       # görevden önce inilecek derinlik [m], 0.0 = olduğu yerde tut
     dive_rate: 0.15       # derinlik referansının kayma hızı [m/s]; 0.5 m için süre ≈ 3.3 s
+    dive_tol: 0.05        # DIVE → ALIGN geçişi: |z* - z| < dive_tol [m] (eski kodda sabit 0.05)
     max_thrust: 20.0      # itici başına sınır |F| [N] (SDF sınırı 40 N)
     save_plot: true       # görev bitince ~/auv_<görev>.png kaydet
 
@@ -53,3 +54,24 @@ motion_node:
     ff_quad_sway: 35.0    # sway  d2 = |yVV|
     ff_yaw_lin: 2.0       # yaw   d1 = |nR|
     ff_yaw_quad: 4.0      # yaw   d2 = |nRR|
+
+    # --- FAILSAFE (state machine) --- gerekçeler: docs/ODEV2_STATE_MACHINE_FAILSAFE.md (Q5–Q13)
+    # Z değerleri DÜNYA çerçevesinde (havuz yüzeyi z = 0, zemin z = -3.0). Açılar radyan.
+    fs_odom_timeout: 0.5     # Q5  T_stale [s]: odometri yaşı (duvar saati). 25 odom / 10 kontrol periyodu; kör gidiş 0.4·0.5 = 0.2 m
+    fs_watchdog_period: 0.05 # Q6  duvar saatli watchdog periyodu [s]
+    fs_tilt_max: 0.785       # Q8  |φ| veya |θ| > 45° → devrilme (normalde < 1°)
+    fs_z_min: -2.6           # Q9  z < z_min → zemine yakın: zemin -3.0 + yarı yükseklik 0.1 + itkisiz süzülme 0.24 + algılama 0.02 + pay
+    fs_z_max: -0.2           # Q9  z > z_max → yüzeye çıktı / derinlik kontrolü kayıp
+    fs_err_max: 0.6          # Q10 takip hatası ‖p_ref - p‖ eşiği [m] (T1'de ölçülen en büyük ≈ 0.11 m'nin ~5 katı)
+    fs_sat_time: 3.0         # Q10 bir itici kesintisiz bu kadar süre sınırda kalırsa [s]
+    fs_nan_n: 1              # Q11 debounce: ardışık örnek sayısı (tam sayı). NaN tek örnekte kabul (PID integrali bozulur)
+    fs_tilt_n: 5             #     0.25 s
+    fs_depth_n: 3            #     0.15 s (0.15 m/s inişte 2 cm)
+    fs_err_n: 20             #     1.0 s
+    fs_sat_n: 1              #     fs_sat_time zaten bir süre filtresi
+    fs_clear_time: 2.0       # Q13 FAILSAFE çıkışı: arıza bu kadar süre yok + /auv/failsafe_reset onayı
+    fs_ascend_force: 20.0    # Q12 'ascend' eyleminde toplam yukarı kuvvet [N] → terminal hız ≈ 0.47 m/s
+    fs_ascend_stop_z: -1.0   # Q12 bu derinliğe çıkınca itki 0; 0.47 m/s'den süzülme ≈ 0.48 m → ≈ -0.5'te durur (z_max içinde)
+    fs_ascend_max_time: 10.0 # Q12 yükselme süre sınırı [s]
+    inject_fault: none       # T4 testi: none | nan_odom | stale_odom | tilt   (ros2 param set /motion_node inject_fault nan_odom)
+    log_dir: ~/auv_logs      # her çalıştırmada CSV (durum, poz, hata); boş = kayıt yok

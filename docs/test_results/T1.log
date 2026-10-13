@@ -1,0 +1,18 @@
+[INFO] Kayıt: /home/mustafa/auv_logs/auv_square_20261013_214341.csv
+[INFO] Görev başladı
+[INFO] Durum: INIT -> DIVE (start_delay doldu) t=3.00 s
+[INFO] Durum: DIVE -> ALIGN (|z*-z| < 0.05) t=5.90 s
+[INFO] Durum: ALIGN -> TRACK (|e_ψ| < yaw_tol) t=5.90 s
+[INFO] Durum: TRACK -> ALIGN (durağa varıldı) t=17.75 s
+[INFO] Durum: ALIGN -> DWELL (|e_ψ| < yaw_tol) t=20.70 s
+[INFO] Durum: DWELL -> TRACK (bekleme bitti) t=22.70 s
+[INFO] Durum: TRACK -> ALIGN (durağa varıldı) t=34.55 s
+[INFO] Durum: ALIGN -> DWELL (|e_ψ| < yaw_tol) t=37.50 s
+[INFO] Durum: DWELL -> TRACK (bekleme bitti) t=39.50 s
+[INFO] Durum: TRACK -> ALIGN (durağa varıldı) t=51.35 s
+[INFO] Durum: ALIGN -> DWELL (|e_ψ| < yaw_tol) t=54.30 s
+[INFO] Durum: DWELL -> TRACK (bekleme bitti) t=56.30 s
+[INFO] Durum: TRACK -> DWELL (durağa varıldı) t=68.15 s
+[INFO] Durum: DWELL -> DONE (son durak + bekleme bitti) t=70.15 s
+[INFO] Görev bitti, son noktada tutuluyor
+[INFO] Grafik kaydedildi: /home/mustafa/auv_square.png

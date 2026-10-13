@@ -1,0 +1,5 @@
+[INFO] Kayıt: /home/mustafa/auv_logs/auv_square_20261013_214707.csv
+[INFO] Görev başladı
+[WARN] Hedef derinlik z* = -4.30 m güvenli aralık dışında [-2.6, -0.2]; FAILSAFE bekleniyor
+[INFO] Durum: INIT -> DIVE (start_delay doldu) t=3.00 s
+[ERROR] FAILSAFE: sebep=depth_low, t=10.40 s, önceki durum=DIVE, eylem=ascend

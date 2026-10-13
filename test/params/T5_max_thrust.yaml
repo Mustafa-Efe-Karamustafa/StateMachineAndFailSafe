@@ -1,0 +1,5 @@
+# T5: itici sınırı 3 N (ödevdeki değer). Yatay kapasite 4·3·cos45 = 8.5 N > 0.4 m/s'deki sürtünme 5.2 N:
+#     kontrol aslında YETİYOR → e ≤ 0.13 m, doyma ≤ 0.8 s → Q10 eşiklerine göre FAILSAFE OLMAMALI (yanlış alarm yok)
+motion_node:
+  ros__parameters:
+    max_thrust: 3.0
