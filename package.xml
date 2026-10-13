@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!-- =============================================================================
+     DOSYA : package.xml
+     AMAÇ  : ROS 2 paket tanımı: ad, sürüm, bağımlılıklar. colcon ve rosdep bunu okur. Matematik içermez.
+     ============================================================================= -->
+<package format="3">
+  <name>sualti_sim_son</name>
+  <version>0.1.1</version>
+  <description>Gazebo fizikli su altı aracı: kare ve daire sürüş, PID</description>
+  <maintainer email="takim@example.com">Sualti Takimi</maintainer>
+  <license>MIT</license>
+
+  <!-- Kod tarafı: düğüm ve mesaj tipleri -->
+  <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <!-- Çalışma zamanı: launch dosyası ve köprü; grafik için matplotlib -->
+  <exec_depend>ros_gz_bridge</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>ament_index_python</exec_depend>
+  <exec_depend>python3-matplotlib</exec_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

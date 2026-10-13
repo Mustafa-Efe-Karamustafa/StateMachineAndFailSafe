@@ -1,0 +1,281 @@
+<?xml version="1.0" ?>
+<!-- =============================================================================
+     DOSYA : worlds/pool.sdf
+     AMAÇ  : Gazebo dünyası: havuz zemini, köşe işaretleri, ve fizikle yüzen takım aracı "auv"
+             (55 x 48 x 20.5 cm; 4 yatay itici X dizilimi + 2 dikey itici).
+     FİZİK ÖZETİ:
+       Nötr yüzdürme : kaldırma F_b = ρ·V·g, ağırlık W = m·g. m = ρ·V ise net dikey kuvvet 0.
+       Sürtünme      : F_d = -(d1 + d2·|v|)·v  (hidrodinamik eklenti: xU/xUU, yV/yVV, nR/nRR...).
+       Eklenen kütle : m_etkin = m + m_a  (araç suyu da hızlandırır; xDotU, yDotV... değerleri).
+       İtici         : kuvvet pervane ekseni (prop linkinin +x ekseni) boyunca uygulanır.
+     ============================================================================= -->
+<sdf version="1.8">
+  <world name="pool">
+    <!-- Fizik adımı: Δt = 0.002 s (500 Hz). Küçük Δt sayısal kararlılığı artırır; gerçek zaman çarpanı 1.0. -->
+    <physics name="adim" type="ignored">
+      <max_step_size>0.002</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+    <!-- Yerçekimi g = (0, 0, -9.8) m/s²: z yukarı pozitif, ağırlık W = m·g aşağı. -->
+    <gravity>0 0 -9.8</gravity>
+
+    <!-- Sistem eklentileri: fizik motoru, kullanıcı komutları, sahne yayını. -->
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
+    <!-- Kaldırma: her gövdeye F_b = ρ_sıvı·V·g yukarı uygulanır (V = çarpışma geometrisi hacmi), ρ_sıvı = 1000 kg/m³ (tatlı su). -->
+    <plugin filename="gz-sim-buoyancy-system" name="gz::sim::systems::Buoyancy">
+      <uniform_fluid_density>1000</uniform_fluid_density>
+    </plugin>
+
+    <!-- Görsel: ortam ışığı ve arka plan rengi (fiziği etkilemez). -->
+    <scene><ambient>0.5 0.55 0.65 1</ambient><background>0.1 0.25 0.45 1</background></scene>
+    <light type="directional" name="sun">
+      <cast_shadows>false</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.9 0.9 0.9 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <direction>-0.3 0.2 -1</direction>
+    </light>
+
+    <!-- Havuz zemini: 20 x 20 m, üst yüzey z = -3.05 + 0.05 = -3.0 m. Araç ve su yüzeyi z = 0 arasında 3 m su vardır. -->
+    <model name="havuz_zemin">
+      <static>true</static>
+      <link name="zemin">
+        <collision name="col"><pose>0 0 -3.05 0 0 0</pose><geometry><box><size>20 20 0.1</size></box></geometry></collision>
+        <visual name="vis"><pose>0 0 -3.05 0 0 0</pose><geometry><box><size>20 20 0.1</size></box></geometry><material><ambient>0.25 0.35 0.5 1.0</ambient><diffuse>0.25 0.35 0.5 1.0</diffuse></material></visual>
+        <!-- Izgara çizgileri: x = -8..8 ve y = -8..8 boyunca 1 m aralık; kırmızı çizgi x = 0, yeşil çizgi y = 0 (yalnız görsel, çarpışma yok). -->
+        <visual name="gx-8"><pose>-8 0 -2.99 0 0 0</pose><geometry><box><size>0.03 16 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gy-8"><pose>0 -8 -2.99 0 0 0</pose><geometry><box><size>16 0.03 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gx-7"><pose>-7 0 -2.99 0 0 0</pose><geometry><box><size>0.03 16 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gy-7"><pose>0 -7 -2.99 0 0 0</pose><geometry><box><size>16 0.03 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gx-6"><pose>-6 0 -2.99 0 0 0</pose><geometry><box><size>0.03 16 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gy-6"><pose>0 -6 -2.99 0 0 0</pose><geometry><box><size>16 0.03 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gx-5"><pose>-5 0 -2.99 0 0 0</pose><geometry><box><size>0.03 16 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gy-5"><pose>0 -5 -2.99 0 0 0</pose><geometry><box><size>16 0.03 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gx-4"><pose>-4 0 -2.99 0 0 0</pose><geometry><box><size>0.03 16 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gy-4"><pose>0 -4 -2.99 0 0 0</pose><geometry><box><size>16 0.03 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gx-3"><pose>-3 0 -2.99 0 0 0</pose><geometry><box><size>0.03 16 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gy-3"><pose>0 -3 -2.99 0 0 0</pose><geometry><box><size>16 0.03 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gx-2"><pose>-2 0 -2.99 0 0 0</pose><geometry><box><size>0.03 16 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gy-2"><pose>0 -2 -2.99 0 0 0</pose><geometry><box><size>16 0.03 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gx-1"><pose>-1 0 -2.99 0 0 0</pose><geometry><box><size>0.03 16 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gy-1"><pose>0 -1 -2.99 0 0 0</pose><geometry><box><size>16 0.03 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gx0"><pose>0 0 -2.99 0 0 0</pose><geometry><box><size>0.03 16 0.01</size></box></geometry><material><ambient>0.9 0.2 0.2 1.0</ambient><diffuse>0.9 0.2 0.2 1.0</diffuse></material></visual>
+<visual name="gy0"><pose>0 0 -2.99 0 0 0</pose><geometry><box><size>16 0.03 0.01</size></box></geometry><material><ambient>0.2 0.8 0.2 1.0</ambient><diffuse>0.2 0.8 0.2 1.0</diffuse></material></visual>
+<visual name="gx1"><pose>1 0 -2.99 0 0 0</pose><geometry><box><size>0.03 16 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gy1"><pose>0 1 -2.99 0 0 0</pose><geometry><box><size>16 0.03 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gx2"><pose>2 0 -2.99 0 0 0</pose><geometry><box><size>0.03 16 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gy2"><pose>0 2 -2.99 0 0 0</pose><geometry><box><size>16 0.03 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gx3"><pose>3 0 -2.99 0 0 0</pose><geometry><box><size>0.03 16 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gy3"><pose>0 3 -2.99 0 0 0</pose><geometry><box><size>16 0.03 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gx4"><pose>4 0 -2.99 0 0 0</pose><geometry><box><size>0.03 16 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gy4"><pose>0 4 -2.99 0 0 0</pose><geometry><box><size>16 0.03 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gx5"><pose>5 0 -2.99 0 0 0</pose><geometry><box><size>0.03 16 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gy5"><pose>0 5 -2.99 0 0 0</pose><geometry><box><size>16 0.03 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gx6"><pose>6 0 -2.99 0 0 0</pose><geometry><box><size>0.03 16 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gy6"><pose>0 6 -2.99 0 0 0</pose><geometry><box><size>16 0.03 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gx7"><pose>7 0 -2.99 0 0 0</pose><geometry><box><size>0.03 16 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gy7"><pose>0 7 -2.99 0 0 0</pose><geometry><box><size>16 0.03 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gx8"><pose>8 0 -2.99 0 0 0</pose><geometry><box><size>0.03 16 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+<visual name="gy8"><pose>0 8 -2.99 0 0 0</pose><geometry><box><size>16 0.03 0.01</size></box></geometry><material><ambient>0.75 0.8 0.85 1.0</ambient><diffuse>0.75 0.8 0.85 1.0</diffuse></material></visual>
+      </link>
+    </model>
+
+    <!-- Su yüzeyi: z = 0 düzleminde yarı saydam levha (yalnız görsel). -->
+    <model name="su_yuzeyi">
+      <static>true</static>
+      <link name="yuzey">
+        <visual name="vis"><transparency>0.85</transparency><geometry><box><size>20 20 0.02</size></box></geometry><material><ambient>0.2 0.5 0.9 0.3</ambient><diffuse>0.2 0.5 0.9 0.3</diffuse></material></visual>
+      </link>
+    </model>
+
+    <!-- Kare köşe işaretleri: (0,0), (4,0), (4,4), (0,4) m. Araç (0,0)da +x yönüne bakarak başlar; başlangıç çerçevesi dünya çerçevesiyle çakışır. -->
+    <model name="kose_0_0"><static>true</static><pose>0 0 -2.5 0 0 0</pose>
+      <link name="l"><visual name="v"><geometry><cylinder><radius>0.08</radius><length>1.0</length></cylinder></geometry><material><ambient>1.0 0.5 0.0 1.0</ambient><diffuse>1.0 0.5 0.0 1.0</diffuse></material></visual></link>
+    </model>
+    <model name="kose_4_0"><static>true</static><pose>4 0 -2.5 0 0 0</pose>
+      <link name="l"><visual name="v"><geometry><cylinder><radius>0.08</radius><length>1.0</length></cylinder></geometry><material><ambient>1.0 0.5 0.0 1.0</ambient><diffuse>1.0 0.5 0.0 1.0</diffuse></material></visual></link>
+    </model>
+    <model name="kose_4_4"><static>true</static><pose>4 4 -2.5 0 0 0</pose>
+      <link name="l"><visual name="v"><geometry><cylinder><radius>0.08</radius><length>1.0</length></cylinder></geometry><material><ambient>1.0 0.5 0.0 1.0</ambient><diffuse>1.0 0.5 0.0 1.0</diffuse></material></visual></link>
+    </model>
+    <model name="kose_0_4"><static>true</static><pose>0 4 -2.5 0 0 0</pose>
+      <link name="l"><visual name="v"><geometry><cylinder><radius>0.08</radius><length>1.0</length></cylinder></geometry><material><ambient>1.0 0.5 0.0 1.0</ambient><diffuse>1.0 0.5 0.0 1.0</diffuse></material></visual></link>
+    </model>
+    <!-- Daire merkezi: r = 1 m, merkez (0, 1). Yol: x = r·sinφ, y = r·(1 - cosφ). -->
+    <model name="daire_merkez"><static>true</static><pose>0 1 -2.85 0 0 0</pose>
+      <link name="l"><visual name="v"><geometry><cylinder><radius>0.05</radius><length>0.3</length></cylinder></geometry><material><ambient>0.6 0.2 0.9 1.0</ambient><diffuse>0.6 0.2 0.9 1.0</diffuse></material></visual></link>
+    </model>
+
+    <!-- ARAÇ. pose = (x, y, z, roll, pitch, yaw) = (0, 0, -1.5 m, 0, 0, 0): 1.5 m derinlikte, +x yönünde başlar. -->
+    <model name="auv">
+      <pose>0 0 -1.5 0 0 0</pose>
+      <link name="base_link">
+        <!-- Eylemsizlik: kütle m = 12.742 kg (+ 6 pervane x 0.05 kg = 13.042 kg). Nötr yüzme koşulu m = ρ·V; V = π·r²·L = π·0.095²·0.46 = 0.01304 m³ → ρV = 13.04 kg ✓. Ağırlık merkezi geometrik merkezin 5 cm altında (z = -0.05): roll/pitch kendiliğinden düzelir, geri getirme momenti M = m·g·h·sinφ ≈ 6.4 N·m/rad. Atalet momentleri kutu yaklaşımı I = m·(b² + c²)/12 (ixx 0.296, iyy 0.374, izz 0.579 kg·m²). -->
+        <inertial>
+          <pose>0 0 -0.05 0 0 0</pose>
+          <mass>12.742</mass>
+          <inertia><ixx>0.296</ixx><iyy>0.374</iyy><izz>0.579</izz></inertia>
+        </inertial>
+        <!-- Gövde (hazne) çarpışma silindiri: r = 0.095 m, L = 0.46 m, ekseni x boyunca (pitch = π/2 ile yatırılmış). Kaldırma hacmi bundan hesaplanır. -->
+        <collision name="hazne_col"><pose>0 0 0 0 1.5708 0</pose><geometry><cylinder><radius>0.095</radius><length>0.46</length></cylinder></geometry></collision>
+        <!-- Görseller: hazne, kubbe (ön kamera yeri), kırmızı yön işareti (+x ucu), itici kasnak ve kolları (yalnız görsel). -->
+        <visual name="hazne"><pose>0 0 0 0 1.5708 0</pose><geometry><cylinder><radius>0.095</radius><length>0.46</length></cylinder></geometry><material><ambient>0.15 0.15 0.17 1.0</ambient><diffuse>0.15 0.15 0.17 1.0</diffuse></material></visual>
+        <visual name="kubbe"><pose>0.23 0 0 0 0 0</pose><geometry><sphere><radius>0.0855</radius></sphere></geometry><material><ambient>0.5 0.55 0.6 0.6</ambient><diffuse>0.5 0.55 0.6 0.6</diffuse></material></visual>
+        <visual name="yon_isareti"><pose>0.05 0 0.098 0 0 0</pose><geometry><box><size>0.25 0.03 0.006</size></box></geometry><material><ambient>0.9 0.1 0.1 1.0</ambient><diffuse>0.9 0.1 0.1 1.0</diffuse></material></visual>
+        <visual name="kasnak_fr"><pose>0.18 -0.19 0 0 1.5708 0.7854</pose><geometry><cylinder><radius>0.05</radius><length>0.06</length></cylinder></geometry><material><ambient>0.12 0.12 0.12 1.0</ambient><diffuse>0.12 0.12 0.12 1.0</diffuse></material></visual>
+<visual name="kol_fr"><pose>0.18 -0.143 -0.01 0 0 0</pose><geometry><box><size>0.03 0.115 0.02</size></box></geometry><material><ambient>0.12 0.12 0.12 1.0</ambient><diffuse>0.12 0.12 0.12 1.0</diffuse></material></visual>
+<visual name="kasnak_fl"><pose>0.18 0.19 0 0 1.5708 -0.7854</pose><geometry><cylinder><radius>0.05</radius><length>0.06</length></cylinder></geometry><material><ambient>0.12 0.12 0.12 1.0</ambient><diffuse>0.12 0.12 0.12 1.0</diffuse></material></visual>
+<visual name="kol_fl"><pose>0.18 0.143 -0.01 0 0 0</pose><geometry><box><size>0.03 0.115 0.02</size></box></geometry><material><ambient>0.12 0.12 0.12 1.0</ambient><diffuse>0.12 0.12 0.12 1.0</diffuse></material></visual>
+<visual name="kasnak_rl"><pose>-0.18 0.19 0 0 1.5708 0.7854</pose><geometry><cylinder><radius>0.05</radius><length>0.06</length></cylinder></geometry><material><ambient>0.12 0.12 0.12 1.0</ambient><diffuse>0.12 0.12 0.12 1.0</diffuse></material></visual>
+<visual name="kol_rl"><pose>-0.18 0.143 -0.01 0 0 0</pose><geometry><box><size>0.03 0.115 0.02</size></box></geometry><material><ambient>0.12 0.12 0.12 1.0</ambient><diffuse>0.12 0.12 0.12 1.0</diffuse></material></visual>
+<visual name="kasnak_rr"><pose>-0.18 -0.19 0 0 1.5708 -0.7854</pose><geometry><cylinder><radius>0.05</radius><length>0.06</length></cylinder></geometry><material><ambient>0.12 0.12 0.12 1.0</ambient><diffuse>0.12 0.12 0.12 1.0</diffuse></material></visual>
+<visual name="kol_rr"><pose>-0.18 -0.143 -0.01 0 0 0</pose><geometry><box><size>0.03 0.115 0.02</size></box></geometry><material><ambient>0.12 0.12 0.12 1.0</ambient><diffuse>0.12 0.12 0.12 1.0</diffuse></material></visual>
+<visual name="kasnak_vl"><pose>0.0 0.19 0 0 0 0</pose><geometry><cylinder><radius>0.05</radius><length>0.06</length></cylinder></geometry><material><ambient>0.12 0.12 0.12 1.0</ambient><diffuse>0.12 0.12 0.12 1.0</diffuse></material></visual>
+<visual name="kol_vl"><pose>0.0 0.143 -0.01 0 0 0</pose><geometry><box><size>0.03 0.115 0.02</size></box></geometry><material><ambient>0.12 0.12 0.12 1.0</ambient><diffuse>0.12 0.12 0.12 1.0</diffuse></material></visual>
+<visual name="kasnak_vr"><pose>0.0 -0.19 0 0 0 0</pose><geometry><cylinder><radius>0.05</radius><length>0.06</length></cylinder></geometry><material><ambient>0.12 0.12 0.12 1.0</ambient><diffuse>0.12 0.12 0.12 1.0</diffuse></material></visual>
+<visual name="kol_vr"><pose>0.0 -0.143 -0.01 0 0 0</pose><geometry><box><size>0.03 0.115 0.02</size></box></geometry><material><ambient>0.12 0.12 0.12 1.0</ambient><diffuse>0.12 0.12 0.12 1.0</diffuse></material></visual>
+      </link>
+
+      <!-- Pervane linkleri: her biri itici konumunda; linkin +x ekseni itki yönüdür. pose = (x, y, z, roll, pitch, yaw).
+       Yatay: FR (0.18, -0.19) yaw +45°;  FL (0.18, +0.19) yaw -45°;  RL (-0.18, +0.19) yaw +45°;  RR (-0.18, -0.19) yaw -45°.
+       Dikey: VL (0, +0.19), VR (0, -0.19), pitch = -π/2 → +x ekseni +z (yukarı) olur. Birim itki vektörü d = (cosθ, sinθ). -->
+      <link name="prop_fr">
+        <pose>0.18 -0.19 0 0 0 0.7854</pose>
+        <inertial><mass>0.05</mass><inertia><ixx>1e-4</ixx><iyy>1e-4</iyy><izz>1e-4</izz></inertia></inertial>
+        <visual name="kanat"><geometry><box><size>0.004 0.075 0.012</size></box></geometry><material><ambient>1.0 0.85 0.0 1.0</ambient><diffuse>1.0 0.85 0.0 1.0</diffuse></material></visual>
+      </link>
+      <link name="prop_fl">
+        <pose>0.18 0.19 0 0 0 -0.7854</pose>
+        <inertial><mass>0.05</mass><inertia><ixx>1e-4</ixx><iyy>1e-4</iyy><izz>1e-4</izz></inertia></inertial>
+        <visual name="kanat"><geometry><box><size>0.004 0.075 0.012</size></box></geometry><material><ambient>1.0 0.85 0.0 1.0</ambient><diffuse>1.0 0.85 0.0 1.0</diffuse></material></visual>
+      </link>
+      <link name="prop_rl">
+        <pose>-0.18 0.19 0 0 0 0.7854</pose>
+        <inertial><mass>0.05</mass><inertia><ixx>1e-4</ixx><iyy>1e-4</iyy><izz>1e-4</izz></inertia></inertial>
+        <visual name="kanat"><geometry><box><size>0.004 0.075 0.012</size></box></geometry><material><ambient>1.0 0.85 0.0 1.0</ambient><diffuse>1.0 0.85 0.0 1.0</diffuse></material></visual>
+      </link>
+      <link name="prop_rr">
+        <pose>-0.18 -0.19 0 0 0 -0.7854</pose>
+        <inertial><mass>0.05</mass><inertia><ixx>1e-4</ixx><iyy>1e-4</iyy><izz>1e-4</izz></inertia></inertial>
+        <visual name="kanat"><geometry><box><size>0.004 0.075 0.012</size></box></geometry><material><ambient>1.0 0.85 0.0 1.0</ambient><diffuse>1.0 0.85 0.0 1.0</diffuse></material></visual>
+      </link>
+      <link name="prop_vl">
+        <pose>0.0 0.19 0 0 -1.5708 0</pose>
+        <inertial><mass>0.05</mass><inertia><ixx>1e-4</ixx><iyy>1e-4</iyy><izz>1e-4</izz></inertia></inertial>
+        <visual name="kanat"><geometry><box><size>0.004 0.075 0.012</size></box></geometry><material><ambient>1.0 0.85 0.0 1.0</ambient><diffuse>1.0 0.85 0.0 1.0</diffuse></material></visual>
+      </link>
+      <link name="prop_vr">
+        <pose>0.0 -0.19 0 0 -1.5708 0</pose>
+        <inertial><mass>0.05</mass><inertia><ixx>1e-4</ixx><iyy>1e-4</iyy><izz>1e-4</izz></inertia></inertial>
+        <visual name="kanat"><geometry><box><size>0.004 0.075 0.012</size></box></geometry><material><ambient>1.0 0.85 0.0 1.0</ambient><diffuse>1.0 0.85 0.0 1.0</diffuse></material></visual>
+      </link>
+
+      <!-- İtici eklemleri: pervane, gövdeye x ekseninde dönen revolute eklemle bağlıdır. Kuvvet bu eksen boyunca gövdeye iletilir (limit ±1e12 = sınırsız dönüş). -->
+      <joint name="thruster_fr" type="revolute">
+        <parent>base_link</parent><child>prop_fr</child>
+        <axis><xyz>1 0 0</xyz><limit><lower>-1e12</lower><upper>1e12</upper></limit></axis>
+      </joint>
+      <joint name="thruster_fl" type="revolute">
+        <parent>base_link</parent><child>prop_fl</child>
+        <axis><xyz>1 0 0</xyz><limit><lower>-1e12</lower><upper>1e12</upper></limit></axis>
+      </joint>
+      <joint name="thruster_rl" type="revolute">
+        <parent>base_link</parent><child>prop_rl</child>
+        <axis><xyz>1 0 0</xyz><limit><lower>-1e12</lower><upper>1e12</upper></limit></axis>
+      </joint>
+      <joint name="thruster_rr" type="revolute">
+        <parent>base_link</parent><child>prop_rr</child>
+        <axis><xyz>1 0 0</xyz><limit><lower>-1e12</lower><upper>1e12</upper></limit></axis>
+      </joint>
+      <joint name="thruster_vl" type="revolute">
+        <parent>base_link</parent><child>prop_vl</child>
+        <axis><xyz>1 0 0</xyz><limit><lower>-1e12</lower><upper>1e12</upper></limit></axis>
+      </joint>
+      <joint name="thruster_vr" type="revolute">
+        <parent>base_link</parent><child>prop_vr</child>
+        <axis><xyz>1 0 0</xyz><limit><lower>-1e12</lower><upper>1e12</upper></limit></axis>
+      </joint>
+
+      <!-- Hidrodinamik (Fossen modeli, gövde eksenlerinde):
+       Sürtünme  : X_sürt = -(xU + xUU·|u|)·u    (surge);  yV, yVV (sway);  zW, zWW (heave);  nR, nRR (yaw);  kP.., mQ.. (roll/pitch).
+       Eklenen kütle: m_etkin,x = 12.742 + 0.3 + 4 = 17.04 kg; y: 21.04 kg; z: 23.04 kg; yaw: Izz + 0.2 ≈ 0.78 kg·m².
+       Sabit hızda itki = sürtünme: u = 0.4 m/s → F = 5·0.4 + 20·0.4² = 5.2 N (gains.yaml ff_lin, ff_quad bu değerlerdir). -->
+      <plugin filename="gz-sim-hydrodynamics-system" name="gz::sim::systems::Hydrodynamics">
+        <link_name>base_link</link_name>
+        <xDotU>-4</xDotU><yDotV>-8</yDotV><zDotW>-10</zDotW>
+        <kDotP>-0.05</kDotP><mDotQ>-0.1</mDotQ><nDotR>-0.2</nDotR>
+        <xU>-5</xU><xUU>-20</xUU>
+        <yV>-8</yV><yVV>-35</yVV>
+        <zW>-10</zW><zWW>-70</zWW>
+        <kP>-1.5</kP><kPP>-2</kPP>
+        <mQ>-1.5</mQ><mQQ>-2</mQQ>
+        <nR>-2</nR><nRR>-4</nRR>
+      </plugin>
+
+      <!-- İticiler (6 adet, aynı ayar): konu /model/auv/joint/<eklem>/cmd_thrust, komut doğrudan itki [N]. Model: T = ρ·Ct·n²·D⁴ (n pervane devri [dev/s], ρ = 1000, D = 0.08 m, Ct = 0.004422). Komut ±40 N ile sınırlı; kontrol kodu ±20 N kullanır. -->
+      <plugin filename="gz-sim-thruster-system" name="gz::sim::systems::Thruster">
+        <namespace>auv</namespace>
+        <joint_name>thruster_fr</joint_name>
+        <thrust_coefficient>0.004422</thrust_coefficient>
+        <fluid_density>1000</fluid_density>
+        <propeller_diameter>0.08</propeller_diameter>
+        <max_thrust_cmd>40</max_thrust_cmd>
+        <min_thrust_cmd>-40</min_thrust_cmd>
+      </plugin>
+      <plugin filename="gz-sim-thruster-system" name="gz::sim::systems::Thruster">
+        <namespace>auv</namespace>
+        <joint_name>thruster_fl</joint_name>
+        <thrust_coefficient>0.004422</thrust_coefficient>
+        <fluid_density>1000</fluid_density>
+        <propeller_diameter>0.08</propeller_diameter>
+        <max_thrust_cmd>40</max_thrust_cmd>
+        <min_thrust_cmd>-40</min_thrust_cmd>
+      </plugin>
+      <plugin filename="gz-sim-thruster-system" name="gz::sim::systems::Thruster">
+        <namespace>auv</namespace>
+        <joint_name>thruster_rl</joint_name>
+        <thrust_coefficient>0.004422</thrust_coefficient>
+        <fluid_density>1000</fluid_density>
+        <propeller_diameter>0.08</propeller_diameter>
+        <max_thrust_cmd>40</max_thrust_cmd>
+        <min_thrust_cmd>-40</min_thrust_cmd>
+      </plugin>
+      <plugin filename="gz-sim-thruster-system" name="gz::sim::systems::Thruster">
+        <namespace>auv</namespace>
+        <joint_name>thruster_rr</joint_name>
+        <thrust_coefficient>0.004422</thrust_coefficient>
+        <fluid_density>1000</fluid_density>
+        <propeller_diameter>0.08</propeller_diameter>
+        <max_thrust_cmd>40</max_thrust_cmd>
+        <min_thrust_cmd>-40</min_thrust_cmd>
+      </plugin>
+      <plugin filename="gz-sim-thruster-system" name="gz::sim::systems::Thruster">
+        <namespace>auv</namespace>
+        <joint_name>thruster_vl</joint_name>
+        <thrust_coefficient>0.004422</thrust_coefficient>
+        <fluid_density>1000</fluid_density>
+        <propeller_diameter>0.08</propeller_diameter>
+        <max_thrust_cmd>40</max_thrust_cmd>
+        <min_thrust_cmd>-40</min_thrust_cmd>
+      </plugin>
+      <plugin filename="gz-sim-thruster-system" name="gz::sim::systems::Thruster">
+        <namespace>auv</namespace>
+        <joint_name>thruster_vr</joint_name>
+        <thrust_coefficient>0.004422</thrust_coefficient>
+        <fluid_density>1000</fluid_density>
+        <propeller_diameter>0.08</propeller_diameter>
+        <max_thrust_cmd>40</max_thrust_cmd>
+        <min_thrust_cmd>-40</min_thrust_cmd>
+      </plugin>
+      <!-- Odometri: 50 Hz, /model/auv/odometry. Poz (x, y, z) ve yönelim kuaterniyonu; 3 boyutlu (roll/pitch dahil). motion_node ψ yaw açısını kuaterniyondan çıkarır. -->
+      <plugin filename="gz-sim-odometry-publisher-system" name="gz::sim::systems::OdometryPublisher">
+        <odom_frame>odom</odom_frame>
+        <robot_base_frame>base_link</robot_base_frame>
+        <dimensions>3</dimensions>
+        <odom_publish_frequency>50</odom_publish_frequency>
+      </plugin>
+    </model>
+  </world>
+</sdf>

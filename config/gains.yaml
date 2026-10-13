@@ -1,0 +1,55 @@
+# =============================================================================
+# DOSYA : config/gains.yaml
+# AMAÇ  : Kontrol kazançları, hız/yol ve sürtünme ileri besleme parametreleri. motion_node bunları okur;
+#         kodu değiştirmeden ayar yapılır.  KURAL: ondalık parametreleri 0 değil 0.0 yazın (ROS tip denetimi).
+# KAZANÇ SEÇİMİ (kapalı çevrim m·s² + (d+Kd)·s + Kp = 0;  ωn = √(Kp/m),  ζ = (d+Kd)/(2√(Kp·m)), hedef ζ ≈ 1):
+#   Etkin kütleler (kütle + eklenen kütle): m_x ≈ 17, m_y ≈ 21, m_z ≈ 23 kg, Izz_eff ≈ 0.78 kg·m²
+#   konum x: ωn ≈ 1.1 rad/s, ζ ≈ 1.1 | derinlik: ωn ≈ 1.3, ζ ≈ 1.0 | yaw: ωn ≈ 2.0, ζ ≈ 1.5
+# =============================================================================
+motion_node:
+  ros__parameters:
+    # --- Hız / görev ---
+    cruise_speed: 0.4     # tepe hız v_max [m/s]
+    accel: 0.2            # trapez ivme a [m/s²]; durma mesafesi v²/(2a) = 0.4 m
+    dwell: 2.0            # köşelerde bekleme [s]
+    start_delay: 3.0      # simülasyon başında itkisiz bekleme [s]
+    line_length: 5.0      # doğru uzunluğu [m]
+    square_side: 4.0      # kare kenarı [m]
+    circle_radius: 1.0    # daire yarıçapı r [m]; gereken yaw hızı v/r = 0.4 rad/s
+    yaw_mode: tangent     # tangent | hold | auto (auto = tangent)
+    yaw_rate_max: 0.5     # yaw referans hız sınırı ω_max [rad/s]; daire için v/r'den büyük olmalı (kod v ≤ 0.9·ω_max·r'ye kısar)
+    yaw_tol: 0.087        # durakta hizalanma toleransı [rad] (≈5°); sağlanmadan yol ilerlemez
+    dive_depth: 0.5       # görevden önce inilecek derinlik [m], 0.0 = olduğu yerde tut
+    dive_rate: 0.15       # derinlik referansının kayma hızı [m/s]; 0.5 m için süre ≈ 3.3 s
+    max_thrust: 20.0      # itici başına sınır |F| [N] (SDF sınırı 40 N)
+    save_plot: true       # görev bitince ~/auv_<görev>.png kaydet
+
+    # --- Konum PID (x ve y aynı) ---  u = Kp·e + Ki·∫e + Kd·ė  [N]
+    pos_kp: 20.0
+    pos_ki: 1.0
+    pos_kd: 35.0
+    pos_limit: 30.0       # çıkış sınırı [N]
+    pos_i_limit: 8.0      # integral terimi sınırı [N]
+
+    # --- Yaw PID --- çıkış moment [N·m]
+    yaw_kp: 3.0
+    yaw_ki: 0.2
+    yaw_kd: 2.5
+    yaw_limit: 8.0
+    yaw_i_limit: 1.5
+    d_tau: 0.1            # türev filtresi zaman sabiti τ [s]; kesim frekansı 1/(2πτ) ≈ 1.6 Hz
+
+    # --- Derinlik PID (dikey iticiler) ---
+    z_kp: 40.0
+    z_ki: 2.0
+    z_kd: 50.0
+    z_limit: 30.0
+    z_i_limit: 8.0
+
+    # --- Sürtünme ileri beslemesi ---  F_ff = (d1 + d2·|v|)·v ; katsayılar pool.sdf hidrodinamik eklentisiyle aynı işaretsiz değerler
+    ff_lin: 5.0           # surge d1 = |xU|   (0 yaparsanız yalnız PID kalır)
+    ff_quad: 20.0         # surge d2 = |xUU|
+    ff_lin_sway: 8.0      # sway  d1 = |yV|
+    ff_quad_sway: 35.0    # sway  d2 = |yVV|
+    ff_yaw_lin: 2.0       # yaw   d1 = |nR|
+    ff_yaw_quad: 4.0      # yaw   d2 = |nRR|
